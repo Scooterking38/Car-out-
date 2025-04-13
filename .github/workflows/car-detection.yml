@@ -1,0 +1,37 @@
+name: Run Car Detection on Video
+
+on:
+  push:
+    paths:
+      - video.mp4
+      - cars_counter.py
+      - '.github/workflows/car-detection.yml'
+  workflow_dispatch:
+
+jobs:
+  run-car-detection:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install opencv-python
+
+    - name: Download haarcascade_car.xml if not present
+      run: |
+        if [ ! -f haarcascade_car.xml ]; then
+          curl -O https://raw.githubusercontent.com/jitendrasb24/Car-Detection-OpenCV/master/haarcascade_car.xml
+        fi
+
+    - name: Run cars_counter.py
+      run: |
+        python cars_counter.py
